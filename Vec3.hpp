@@ -72,8 +72,79 @@ class Vec3 {
     double e[3];
 };
 
+
 // type aliases for Vec3
 using Point3 = Vec3;    // 3D point
 using Colour = Vec3;    // RGB colour
+
+
+// Vec3 UTILITY FUNCTIONS //
+
+// output the space-separated coordinates to the given output-stream
+inline std::ostream& operator<<(std::ostream &out, const Vec3 &v) {
+  return out << v.e[0] << ' ' << v.e[1] << ' ' << v.e[2];
+}
+
+// pointwise addition
+inline Vec3 operator+(const Vec3 &u, const Vec3 &v) {
+  return Vec3( u.e[0] + v.e[0]
+             , u.e[1] + v.e[1]
+             , u.e[2] + v.e[2]
+             );
+}
+
+// pointwise subtraction
+inline Vec3 operator-(const Vec3 &u, const Vec3 &v) {
+  return Vec3( u.e[0] - v.e[0]
+             , u.e[1] - v.e[1]
+             , u.e[2] - v.e[2]
+             );
+}
+
+// pointwise multiplication
+inline Vec3 operator*(const Vec3 &u, const Vec3 &v) {
+  return Vec3( u.e[0] * v.e[0]
+             , u.e[1] * v.e[1]
+             , u.e[2] * v.e[2]
+             );
+}
+
+// scalar multiplication
+inline Vec3 operator*(double t, const Vec3 &v) {
+  return Vec3( t * v.e[0]
+             , t * v.e[1]
+             , t * v.e[2]
+             );
+}
+
+// scalar multiplication is commutative
+inline Vec3 operator*(const Vec3 &v, double t) {
+  return t * v;
+}
+
+// scalar division
+inline Vec3 operator/(Vec3 v, double t) {
+  return (1 / t) * v;
+}
+
+// dot product
+inline double dot(const Vec3 &u, const Vec3 &v) {
+  return u.e[0] * v.e[0]
+       + u.e[1] * v.e[1]
+       + u.e[2] * v.e[2];
+}
+
+// cross product
+inline Vec3 cross(const Vec3 &u, const Vec3 &v) {
+  return Vec3( u.e[1] * v.e[2] - u.e[2] * v.e[1]
+             , u.e[2] * v.e[0] - u.e[0] * v.e[2]
+             , u.e[0] * v.e[1] - u.e[1] * v.e[0]
+             );
+}
+
+// compute the vector's unit vector
+inline Vec3 unit_vector(Vec3 v) {
+  return v / v.length();
+}
 
 #endif
