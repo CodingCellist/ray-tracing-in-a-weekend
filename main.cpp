@@ -8,10 +8,12 @@ int main() {
   const int imgHeight = 256;
 
   // Render
-  //
+
   std::cout << "P3\n" << imgWidth << ' ' << imgHeight << "\n255\n";
 
   for (int j = imgHeight - 1; j >= 0; --j) {
+    // progress indicator
+    std::cerr << '\r' << "Scanlines remaining: " << j << ' ' << std::flush;
     for (int i = 0; i < imgWidth; ++i) {
       auto r = double(i) / (imgWidth - 1);
       auto g = double(j) / (imgHeight - 1);
@@ -24,5 +26,8 @@ int main() {
       std::cout << ir << ' ' << ig << ' ' << ib << '\n';
     }
   }
+
+  // end of progress indicator
+  std::cerr << '\n' << "Done.\n";
 }
 
