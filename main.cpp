@@ -4,8 +4,24 @@
 
 #include <iostream>
 
-// background gradient
+// hard-coded maths for whether a ray hits a sphere
+bool hit_sphere(const Point3& center, double radius, const Ray& r) {
+  Vec3 oc = r.origin() - center;
+  // terms of the quadratic for t
+  auto a = dot(r.direction(), r.direction()); // (A - C) . (A - C)
+  auto b = 2.0 * dot(oc, r.direction());      // 2 x B . (A - C)
+  auto c = dot(oc, oc) - radius * radius;     // (B . B) - (r ^ 2)
+  // recall highschool maths
+  auto discriminant = b * b - 4 * a * c;
+  return discriminant > 0;
+}
+
+// colour of the given ray
 Colour ray_colour(const Ray& r) {
+  // colour rays that hit the sphere red
+  if (hit_sphere( Point3(0, 0, -1), 0.5, r)) {
+    return Colour(1, 0, 0);
+  }
   Vec3 unit_direction = unit_vector(r.direction());
   auto t = 0.5 * (unit_direction.y() + 1.0);
   return (1.0 - t) * Colour(1.0, 1.0, 1.0) + t * Colour(0.5, 0.7, 1.0);
