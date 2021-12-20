@@ -8,18 +8,19 @@
 // the ray hits the given sphere
 double hit_sphere(const Point3& center, double radius, const Ray& r) {
   Vec3 oc = r.origin() - center;
-  // terms of the quadratic for t
-  auto a = dot(r.direction(), r.direction()); // (A - C) . (A - C)
-  auto b = 2.0 * dot(oc, r.direction());      // 2 x B . (A - C)
-  auto c = dot(oc, oc) - radius * radius;     // (B . B) - (r ^ 2)
-  // recall highschool maths
-  auto discriminant = b * b - 4 * a * c;
+
+  // terms of the quadratic for t, simplified through b = 2h
+  auto a = r.direction().length_squared();    // CA . CA = |CA|^2
+  auto half_b = dot(oc, r.direction());
+  auto c = oc.length_squared() - radius * radius;
+  auto discriminant = half_b * half_b - a * c;
+
   // ignoring non-real solutions
   if (discriminant < 0) {
     return -1.0;
   }
   else {
-    return (-b - sqrt(discriminant)) / (2.0 * a);
+    return (-half_b - sqrt(discriminant)) / a;
   }
 }
 
