@@ -4,8 +4,9 @@
 
 #include <iostream>
 
-// hard-coded maths for whether a ray hits a sphere
-bool hit_sphere(const Point3& center, double radius, const Ray& r) {
+// hard-coded maths for whether a ray hits a sphere, returning the `t` at which
+// the ray hits the given sphere
+double hit_sphere(const Point3& center, double radius, const Ray& r) {
   Vec3 oc = r.origin() - center;
   // terms of the quadratic for t
   auto a = dot(r.direction(), r.direction()); // (A - C) . (A - C)
@@ -13,17 +14,27 @@ bool hit_sphere(const Point3& center, double radius, const Ray& r) {
   auto c = dot(oc, oc) - radius * radius;     // (B . B) - (r ^ 2)
   // recall highschool maths
   auto discriminant = b * b - 4 * a * c;
-  return discriminant > 0;
+  // ignoring non-real solutions
+  if (discriminant < 0) {
+    return -1.0;
+  }
+  else {
+    return (-b - sqrt(discriminant)) / (2.0 * a);
+  }
 }
 
 // colour of the given ray
 Colour ray_colour(const Ray& r) {
-  // colour rays that hit the sphere red
-  if (hit_sphere( Point3(0, 0, -1), 0.5, r)) {
-    return Colour(1, 0, 0);
+  // colour rays that hit the sphere according to the surface normal
+  auto t = hit_sphere(Point3(0, 0, -1), 0.5, r);
+  if (t > 0.0) {
+    // compute the surface normal
+    Vec3 N = unit_vector(r.at(t) - Vec3(0, 0, -1));
+    // shade the surface normal
+    return 0.5 * Colour(N.x() + 1, N.y() + 1, N.z() + 1);
   }
   Vec3 unit_direction = unit_vector(r.direction());
-  auto t = 0.5 * (unit_direction.y() + 1.0);
+  t = 0.5 * (unit_direction.y() + 1.0);
   return (1.0 - t) * Colour(1.0, 1.0, 1.0) + t * Colour(0.5, 0.7, 1.0);
 }
 
