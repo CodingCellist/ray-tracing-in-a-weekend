@@ -46,7 +46,8 @@ bool Sphere::hit (const Ray& r, double t_min, double t_max, hit_record& rec) con
   // store the result in the given `hit_record`
   rec.t = root;
   rec.p = r.at(rec.t);
-  rec.normal = (rec.p - center) / radius;
+  Vec3 outward_normal = (rec.p - center) / radius;
+  rec.set_face_normal(r, outward_normal);
 
   return true;
 }

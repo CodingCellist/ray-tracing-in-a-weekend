@@ -10,6 +10,15 @@ struct hit_record {
   Vec3 normal;
   // `t` at which the hit occurred
   double t;
+  // did the ray hit inside or outside?
+  bool front_face;
+
+  inline void set_face_normal(const Ray& r, const Vec3& outward_normal) {
+    front_face = dot(r.direction(), outward_normal) < 0;
+    // if the ray hit the inside of the sphere, negate the normal to point
+    // against the ray
+    normal = front_face ? outward_normal : -outward_normal;
+  }
 };
 
 class Hittable {
