@@ -3,6 +3,7 @@
 #include "Colour.hpp"
 #include "Hittable_List.hpp"
 #include "Sphere.hpp"
+#include "Camera.hpp"
 
 #include <iostream>
 
@@ -24,8 +25,9 @@ int main() {
   // Image
 
   const auto aspect_ratio =  16.0 / 9.0;    // 16:9
-  const int img_width = 256;
+  const int img_width = 400;
   const int img_height = static_cast<int>(img_width / aspect_ratio);
+  const int samples_per_pixel = 100;
 
   // World
 
@@ -36,15 +38,7 @@ int main() {
 
   // Camera
 
-  auto viewport_height = 2.0;
-  auto viewport_width  = aspect_ratio * viewport_height;
-  auto focal_length    = 1.0;
-
-  auto origin = Point3(0, 0, 0);    // camera "sees" from 0,0,0
-  auto horizontal = Vec3(viewport_width, 0, 0);   // y is horizontal
-  auto vertical = Vec3(0, viewport_height, 0);    // x is vertical
-  auto lower_left_corner =
-    origin - (horizontal / 2) - (vertical / 2) - Vec3(0, 0, focal_length);
+  Camera cam;
 
   // Render
 
@@ -54,15 +48,19 @@ int main() {
     // progress indicator
     std::cerr << '\r' << "Scanlines remaining: " << j << ' ' << std::flush;
     for (int i = 0; i < img_width; ++i) {
-      // horizontal and vertical components of ray on screen
-      auto u = double(i) / (img_width - 1);
-      auto v = double(j) / (img_height - 1);
+      // initial colour is black
+      Colour pixel_colour(0, 0, 0);
+      // Anti-Aliasing
+      for (int s = 0; s < samples_per_pixel; ++s) {
+        // horizontal and vertical components of ray on screen
+        auto u = (i + random_double()) / (img_width - 1);
+        auto v = (j + random_double()) / (img_height - 1);
 
-      Ray r( origin
-           , lower_left_corner + (u * horizontal) + (v * vertical) - origin);
+        Ray r = cam.get_ray(u, v);
 
-      Colour pixel_colour = ray_colour(r, world);
-      write_colour(std::cout, pixel_colour);
+        pixel_colour += ray_colour(r, world);
+      }
+      write_colour(std::cout, pixel_colour, samples_per_pixel);
     }
   }
 
