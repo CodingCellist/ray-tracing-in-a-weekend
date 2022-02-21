@@ -8,13 +8,20 @@
 #include <iostream>
 
 // colour of the given ray
-Colour ray_colour(const Ray& r, const Hittable& world) {
+Colour ray_colour(const Ray& r, const Hittable& world, int depth) {
   hit_record rec;
+
+  // if we hit the depth limit, the ray was absorbed
+  if (depth <= 0) {
+    return Colour(0, 0, 0);
+  }
+
   if (world.hit(r, 0, infinity, rec)) {
     // if we hit a sphere, shade according to the randomly bounced surface
     // normal
     Point3 target = rec.p + rec.normal + random_in_unit_sphere();
-    return 0.5 * ray_colour(ray(rec.p, target - rec.p), world);
+    // recurse, getting 1 closer to the bounce limit
+    return 0.5 * ray_colour(Ray(rec.p, target - rec.p), world, depth - 1);
   }
 
   Vec3 unit_direction = unit_vector(r.direction());
@@ -31,6 +38,7 @@ int main() {
   const int img_width = 400;
   const int img_height = static_cast<int>(img_width / aspect_ratio);
   const int samples_per_pixel = 100;
+  const int max_depth = 50;
 
   // World
 
@@ -61,7 +69,7 @@ int main() {
 
         Ray r = cam.get_ray(u, v);
 
-        pixel_colour += ray_colour(r, world);
+        pixel_colour += ray_colour(r, world, max_depth);
       }
       write_colour(std::cout, pixel_colour, samples_per_pixel);
     }
