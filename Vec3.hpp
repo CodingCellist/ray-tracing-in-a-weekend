@@ -90,18 +90,6 @@ class Vec3 {
 using Point3 = Vec3;    // 3D point
 using Colour = Vec3;    // RGB colour
 
-// generate a random point in the unit sphere
-Vec3 random_in_unit_sphere() {
-  while(true) {
-    // generate random point in unit cube
-    auto p = Vec3::random(-1, 1);
-    // check if the random point is outside the unit sphere; outside radius 1
-    if (p.length_squared() >= 1) continue;
-    // if not, we've found a point!
-    return p;
-  }
-}
-
 // Vec3 UTILITY FUNCTIONS //
 
 // output the space-separated coordinates to the given output-stream
@@ -169,6 +157,23 @@ inline Vec3 cross(const Vec3 &u, const Vec3 &v) {
 // compute the vector's unit vector
 inline Vec3 unit_vector(Vec3 v) {
   return v / v.length();
+}
+
+// generate a random point in the unit sphere
+Vec3 random_in_unit_sphere() {
+  while(true) {
+    // generate random point in unit cube
+    auto p = Vec3::random(-1, 1);
+    // check if the random point is outside the unit sphere; outside radius 1
+    if (p.length_squared() >= 1) continue;
+    // if not, we've found a point!
+    return p;
+  }
+}
+
+// generate a random point on the unit sphere
+Vec3 random_unit_vector() {
+  return unit_vector(random_in_unit_sphere());
 }
 
 #endif
