@@ -16,7 +16,8 @@ Colour ray_colour(const Ray& r, const Hittable& world, int depth) {
     return Colour(0, 0, 0);
   }
 
-  if (world.hit(r, 0, infinity, rec)) {
+  // checking for hits at 0.001 to account for floating-point approximations
+  if (world.hit(r, 0.001, infinity, rec)) {
     // if we hit a sphere, shade according to the randomly bounced surface
     // normal
     Point3 target = rec.p + rec.normal + random_in_unit_sphere();
