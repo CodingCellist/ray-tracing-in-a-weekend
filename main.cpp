@@ -11,9 +11,12 @@
 Colour ray_colour(const Ray& r, const Hittable& world) {
   hit_record rec;
   if (world.hit(r, 0, infinity, rec)) {
-    // if we hit a sphere, shade according to the surface normal
-    return 0.5 * (rec.normal + Colour(1, 1, 1));
+    // if we hit a sphere, shade according to the randomly bounced surface
+    // normal
+    Point3 target = rec.p + rec.normal + random_in_unit_sphere();
+    return 0.5 * ray_colour(ray(rec.p, target - rec.p), world);
   }
+
   Vec3 unit_direction = unit_vector(r.direction());
   auto t = 0.5 * (unit_direction.y() + 1.0);
   return (1.0 - t) * Colour(1.0, 1.0, 1.0) + t * Colour(0.5, 0.7, 1.0);

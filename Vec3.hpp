@@ -66,6 +66,19 @@ class Vec3 {
       return e[0]*e[0] + e[1]*e[1] + e[2]*e[2];
     }
 
+    // create a random Vec3
+    inline static Vec3 random() {
+      return Vec3(random_double(), random_double(), random_double());
+    }
+
+    // create a random Vec3, with (x, y, z) bounded by `min` and `max`
+    inline static Vec3 random(double min, double max) {
+      return Vec3( random_double(min, max)
+                 , random_double(min, max)
+                 , random_double(min, max)
+                 );
+    }
+
   // FIELDS //
   public:
     // the coordinates
@@ -77,6 +90,17 @@ class Vec3 {
 using Point3 = Vec3;    // 3D point
 using Colour = Vec3;    // RGB colour
 
+// generate a random point in the unit sphere
+Vec3 random_in_unit_sphere() {
+  while(true) {
+    // generate random point in unit cube
+    auto p = Vec3::random(-1, 1);
+    // check if the random point is outside the unit sphere; outside radius 1
+    if (p.length_squared() >= 1) continue;
+    // if not, we've found a point!
+    return p;
+  }
+}
 
 // Vec3 UTILITY FUNCTIONS //
 
