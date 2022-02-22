@@ -4,10 +4,9 @@
 #include "Hittable_List.hpp"
 #include "Sphere.hpp"
 #include "Camera.hpp"
+#include "Material.hpp"
 
 #include <iostream>
-
-#define OLD_DIFFUSE FALSE
 
 // colour of the given ray
 Colour ray_colour(const Ray& r, const Hittable& world, int depth) {
@@ -20,16 +19,15 @@ Colour ray_colour(const Ray& r, const Hittable& world, int depth) {
 
   // checking for hits at 0.001 to account for floating-point approximations
   if (world.hit(r, 0.001, infinity, rec)) {
-#if OLD_DIFFUSE
-    // use the old, uniformly scattered diffusion method
-    Point3 target = rec.p + random_in_hemisphere(rec.normal);
-#else
-    // if we hit a sphere, shade according to the randomly bounced surface
-    // normal
-    Point3 target = rec.p + rec.normal + random_unit_vector();
-#endif
-    // recurse, getting 1 closer to the bounce limit
-    return 0.5 * ray_colour(Ray(rec.p, target - rec.p), world, depth - 1);
+    Ray scattered;
+    Colour attenuation;
+    // check if the material scatters the ray
+    if (rec.mat_ptr->scatter(r, rec, attenuation, scattered)) {
+      // if it scattered, handle that and attenuate the colour accordingly
+      return attenuation * ray_colour(scattered, world, depth - 1);
+    }
+    // absorb the ray if it didn't scatter
+    return Colour(0, 0, 0);
   }
 
   Vec3 unit_direction = unit_vector(r.direction());
@@ -51,9 +49,18 @@ int main() {
   // World
 
   Hittable_List world;
-  world.add(make_shared<Sphere>(Point3(0, 0, -1), 0.5));
+
+  auto material_ground = make_shared<Lambertian>(Colour(0.8, 0.8, 0.0));
+  auto material_center = make_shared<Lambertian>(Colour(0.7, 0.3, 0.3));
+  auto material_left   = make_shared<Metal>(Colour(0.8, 0.8, 0.8));
+  auto material_right  = make_shared<Metal>(Colour(0.8, 0.6, 0.2));
+
   // the ground is round
-  world.add(make_shared<Sphere>(Point3(0, -100.5, -1), 100));
+  world.add(make_shared<Sphere>(Point3(0, -100.5, -1), 100, material_ground));
+  // pondering my orbs
+  world.add(make_shared<Sphere>(Point3( 0, 0, -1), 0.5, material_center));
+  world.add(make_shared<Sphere>(Point3(-1, 0, -1), 0.5, material_left));
+  world.add(make_shared<Sphere>(Point3( 1, 0, -1), 0.5, material_right));
 
   // Camera
 

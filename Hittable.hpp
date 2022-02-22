@@ -2,12 +2,17 @@
 #define HITTABLE_H
 
 #include "Ray.hpp"
+#include "RTWeekend.hpp"
+
+class Material;
 
 struct hit_record {
   // point of intersection
   Point3 p;
   // surface normal
   Vec3 normal;
+  // the material used
+  shared_ptr<Material> mat_ptr;
   // `t` at which the hit occurred
   double t;
   // did the ray hit inside or outside?
