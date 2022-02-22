@@ -176,4 +176,17 @@ Vec3 random_unit_vector() {
   return unit_vector(random_in_unit_sphere());
 }
 
+// generate a random, uniformly scattered vector from the surface normal
+Vec3 random_in_hemisphere(const Vec3& normal) {
+  Vec3 in_unit_sphere = random_in_unit_sphere();
+  // if we're in the same hemisphere as the normal, it's fine
+  if (dot(in_unit_sphere, normal) > 0.0) {
+    return in_unit_sphere;
+  }
+  else {
+    // otherwise, we're inside the other unit sphere, so flip the vector
+    return -in_unit_sphere;
+  }
+}
+
 #endif

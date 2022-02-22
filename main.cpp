@@ -7,6 +7,8 @@
 
 #include <iostream>
 
+#define OLD_DIFFUSE FALSE
+
 // colour of the given ray
 Colour ray_colour(const Ray& r, const Hittable& world, int depth) {
   hit_record rec;
@@ -18,9 +20,14 @@ Colour ray_colour(const Ray& r, const Hittable& world, int depth) {
 
   // checking for hits at 0.001 to account for floating-point approximations
   if (world.hit(r, 0.001, infinity, rec)) {
+#if OLD_DIFFUSE
+    // use the old, uniformly scattered diffusion method
+    Point3 target = rec.p + random_in_hemisphere(rec.normal);
+#else
     // if we hit a sphere, shade according to the randomly bounced surface
     // normal
     Point3 target = rec.p + rec.normal + random_unit_vector();
+#endif
     // recurse, getting 1 closer to the bounce limit
     return 0.5 * ray_colour(Ray(rec.p, target - rec.p), world, depth - 1);
   }
