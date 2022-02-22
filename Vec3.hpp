@@ -79,6 +79,12 @@ class Vec3 {
                  );
     }
 
+    // Return true if vector ~= zero in all dimensions
+    bool near_zero() const {
+      const auto s = 1e-8;
+      return (fabs(e[0]) < s) && (fabs(e[1]) < s) && (fabs(e[2]) < s);
+    }
+
   // FIELDS //
   public:
     // the coordinates
