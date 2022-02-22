@@ -79,7 +79,7 @@ class Vec3 {
                  );
     }
 
-    // Return true if vector ~= zero in all dimensions
+    // return true if vector ~= zero in all dimensions
     bool near_zero() const {
       const auto s = 1e-8;
       return (fabs(e[0]) < s) && (fabs(e[1]) < s) && (fabs(e[2]) < s);
@@ -193,6 +193,15 @@ Vec3 random_in_hemisphere(const Vec3& normal) {
     // otherwise, we're inside the other unit sphere, so flip the vector
     return -in_unit_sphere;
   }
+}
+
+// reflect the vector `v` off the surface, using the surface normal `n`
+//
+// (reflection is the same as `v` penetration followed by 2 * (v . n) * n
+//  displacement in the opposite direction, since `n` points perpen. to the
+//  surface by design)
+Vec3 reflect(const Vec3& v, const Vec3& n) {
+  return v - 2 * dot(v, n) * n;
 }
 
 #endif
