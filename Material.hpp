@@ -62,7 +62,7 @@ class Metal : public Material {
     double fuzz;
 };
 
-// class representing dielectric material which always refracts
+// class representing dielectric material
 class Dielectric : public Material {
   public:
     Dielectric(double refractive_index) : ri(refractive_index) {}
@@ -74,9 +74,24 @@ class Dielectric : public Material {
       double refraction_ratio = rec.front_face ? (1.0 / ri) : ri;
 
       Vec3 unit_direction = unit_vector(r_in.direction());
-      Vec3 refracted = refract(unit_direction, rec.normal, refraction_ratio);
 
-      scattered = Ray(rec.p, refracted);
+      // compute the sin and cos values for the angle to the normal
+      double cos_theta = fmin(dot(-unit_direction, rec.normal), 1.0);
+      double sin_theta = sqrt(1.0 - cos_theta * cos_theta);
+
+      Vec3 direction;
+
+      // check if there is a real solution to Snell's Law
+      if (refraction_ratio * sin_theta > 1.0) {
+        // no real sol.n (sin !> 1.0) so _must_ reflect
+        direction = reflect(unit_direction, rec.normal);
+      }
+      else {
+        // can refract
+        direction = refract(unit_direction, rec.normal, refraction_ratio);
+      }
+
+      scattered = Ray(rec.p, direction);
       return true;
     }
 

@@ -51,9 +51,9 @@ int main() {
   Hittable_List world;
 
   auto material_ground = make_shared<Lambertian>(Colour(0.8, 0.8, 0.0));
-  auto material_center = make_shared<Dielectric>(1.5);
+  auto material_center = make_shared<Lambertian>(Colour(0.1, 0.2, 0.5));
   auto material_left   = make_shared<Dielectric>(1.5);
-  auto material_right  = make_shared<Metal>(Colour(0.8, 0.6, 0.2), 1.0);
+  auto material_right  = make_shared<Metal>(Colour(0.8, 0.6, 0.2), 0.0);
 
   // the ground is round
   world.add(make_shared<Sphere>(Point3(0, -100.5, -1), 100, material_ground));
