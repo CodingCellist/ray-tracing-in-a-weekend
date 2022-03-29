@@ -43,14 +43,15 @@ class Lambertian : public Material {
 // class representing reflictive metal material
 class Metal : public Material {
   public:
-    Metal(const Colour& a) : albedo(a) {}
+    Metal(const Colour& a, double f) : albedo(a), fuzz(f < 1 ? f : 1) {}
 
     virtual bool scatter(
         const Ray& r_in, const hit_record& rec, Colour& attenuation, Ray& scattered
     ) const override {
         // reflect the ray perfectly
         Vec3 reflected = reflect(unit_vector(r_in.direction()), rec.normal);
-        scattered = Ray(rec.p, reflected);
+        // scatter the ray, factoring in fuzziness
+        scattered = Ray(rec.p, reflected + fuzz * random_in_unit_sphere());
         attenuation = albedo;
         // scatter if the direction doesn't cancel the normal
         return dot(scattered.direction(), rec.normal) > 0;
@@ -58,6 +59,7 @@ class Metal : public Material {
 
   public:
     Colour albedo;
+    double fuzz;
 };
 
 #endif
