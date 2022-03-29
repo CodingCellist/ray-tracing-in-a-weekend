@@ -204,4 +204,16 @@ Vec3 reflect(const Vec3& v, const Vec3& n) {
   return v - 2 * dot(v, n) * n;
 }
 
+// Calculate the refracted ray according to the ratio of the refractive indices
+Vec3 refract(const Vec3& uv, const Vec3& n, double etai_over_etat) {
+  // cos of angle to normal
+  auto cos_theta = fmin(dot(-uv, n), 1.0);
+  // perpendicular component
+  Vec3 r_out_perp = etai_over_etat * (uv + cos_theta * n);
+  // parallel component
+  Vec3 r_out_par = -sqrt(fabs(1.0 - r_out_perp.length_squared())) * n;
+  // combine the components to get the ray
+  return r_out_perp + r_out_par;
+}
+
 #endif

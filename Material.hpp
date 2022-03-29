@@ -62,4 +62,27 @@ class Metal : public Material {
     double fuzz;
 };
 
+// class representing dielectric material which always refracts
+class Dielectric : public Material {
+  public:
+    Dielectric(double refractive_index) : ri(refractive_index) {}
+
+    virtual bool scatter(
+        const Ray& r_in, const hit_record& rec, Colour& attenuation, Ray& scattered
+    ) const override {
+      attenuation = Colour(1.0, 1.0, 1.0);
+      double refraction_ratio = rec.front_face ? (1.0 / ri) : ri;
+
+      Vec3 unit_direction = unit_vector(r_in.direction());
+      Vec3 refracted = refract(unit_direction, rec.normal, refraction_ratio);
+
+      scattered = Ray(rec.p, refracted);
+      return true;
+    }
+
+  public:
+    // refractive index
+    double ri;
+};
+
 #endif
