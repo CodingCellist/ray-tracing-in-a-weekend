@@ -81,13 +81,17 @@ class Dielectric : public Material {
 
       Vec3 direction;
 
-      // check if there is a real solution to Snell's Law
-      if (refraction_ratio * sin_theta > 1.0) {
-        // no real sol.n (sin !> 1.0) so _must_ reflect
+      // is there a real solution to Snell's Law ?
+      bool cannot_refract = refraction_ratio * sin_theta > 1.0;
+      // randomly determine whether to reflect
+      bool rand_refl = reflectance(cos_theta, refraction_ratio) > random_double();
+
+      // reflect the ray if total internal refl.n or if randomly decided
+      if (cannot_refract || rand_refl) {
         direction = reflect(unit_direction, rec.normal);
       }
       else {
-        // can refract
+        // otherwise, refract the ray
         direction = refract(unit_direction, rec.normal, refraction_ratio);
       }
 
@@ -98,6 +102,14 @@ class Dielectric : public Material {
   public:
     // refractive index
     double ri;
+
+  private:
+    static double reflectance(double cosine, double ref_idx) {
+      // Use Schlick's approx.n for reflectance
+      auto r0 = (1 - ref_idx) / (1 + ref_idx);
+      r0 = r0 * r0;
+      return r0 + (1 - r0) * pow((1 - cosine), 5);
+    }
 };
 
 #endif
