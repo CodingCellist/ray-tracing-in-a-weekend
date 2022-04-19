@@ -195,6 +195,20 @@ Vec3 random_in_hemisphere(const Vec3& normal) {
   }
 }
 
+// generate a random vector originating in a unit disc
+Vec3 random_in_unit_disk() {
+  while (true) {
+    // generate random vect. bounded by a unit square
+    auto p = Vec3(random_double(-1, 1), random_double(-1, 1), 0);
+    // if it's outside the unit disc's radius (i.e. |p|^2 >= 1), try again
+    if (p.length_squared() >= 1) {
+      continue;
+    }
+    // otherwise, we've found our random vect!
+    return p;
+  }
+}
+
 // reflect the vector `v` off the surface, using the surface normal `n`
 //
 // (reflection is the same as `v` penetration followed by 2 * (v . n) * n

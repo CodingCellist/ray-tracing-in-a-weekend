@@ -65,8 +65,13 @@ int main() {
 
   // Camera
 
-  //         lookFrom          lookAt            vup           vfov
-  Camera cam(Point3(-2, 2, 1), Point3(0, 0, -1), Vec3(0, 1, 0), 90, aspect_ratio);
+  Point3 lookFrom = Point3(3, 3, 2);
+  Point3 lookAt   = Point3(0, 0, -1);
+  Vec3 vup = Vec3(0, 1, 0);
+  auto vfov = 20;
+  auto dist_to_focus = (lookFrom - lookAt).length();
+  auto aperture = 2.0;
+  Camera cam(lookFrom, lookAt, vup, vfov, aspect_ratio, aperture, dist_to_focus);
 
   // Render
 
