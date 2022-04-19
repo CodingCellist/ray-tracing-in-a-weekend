@@ -48,24 +48,29 @@ int main() {
 
   // World
 
+  auto R = cos(pi / 4);
   Hittable_List world;
 
-  auto material_ground = make_shared<Lambertian>(Colour(0.8, 0.8, 0.0));
-  auto material_center = make_shared<Lambertian>(Colour(0.1, 0.2, 0.5));
-  auto material_left   = make_shared<Dielectric>(1.5);
-  auto material_right  = make_shared<Metal>(Colour(0.8, 0.6, 0.2), 0.0);
+  auto material_left = make_shared<Lambertian>(Colour(0, 0, 1));
+  auto material_right = make_shared<Lambertian>(Colour(1, 0, 0));
+  world.add(make_shared<Sphere>(Point3(-R, 0, -1), R, material_left));
+  world.add(make_shared<Sphere>(Point3(R, 0, -1), R, material_right));
+  /// auto material_ground = make_shared<Lambertian>(Colour(0.8, 0.8, 0.0));
+  /// auto material_center = make_shared<Lambertian>(Colour(0.1, 0.2, 0.5));
+  /// auto material_left   = make_shared<Dielectric>(1.5);
+  /// auto material_right  = make_shared<Metal>(Colour(0.8, 0.6, 0.2), 0.0);
 
-  // the ground is round
-  world.add(make_shared<Sphere>(Point3(0, -100.5, -1), 100, material_ground));
-  // pondering my orbs
-  world.add(make_shared<Sphere>(Point3( 0, 0, -1),  0.5, material_center));
-  world.add(make_shared<Sphere>(Point3(-1, 0, -1),  0.5, material_left));
-  world.add(make_shared<Sphere>(Point3(-1, 0, -1), -0.4, material_left));
-  world.add(make_shared<Sphere>(Point3( 1, 0, -1),  0.5, material_right));
+  /// // the ground is round
+  /// world.add(make_shared<Sphere>(Point3(0, -100.5, -1), 100, material_ground));
+  /// // pondering my orbs
+  /// world.add(make_shared<Sphere>(Point3( 0, 0, -1),  0.5, material_center));
+  /// world.add(make_shared<Sphere>(Point3(-1, 0, -1),  0.5, material_left));
+  /// world.add(make_shared<Sphere>(Point3(-1, 0, -1), -0.4, material_left));
+  /// world.add(make_shared<Sphere>(Point3( 1, 0, -1),  0.5, material_right));
 
   // Camera
 
-  Camera cam;
+  Camera cam(90, aspect_ratio);
 
   // Render
 
