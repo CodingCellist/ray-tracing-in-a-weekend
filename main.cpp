@@ -35,19 +35,8 @@ Colour ray_colour(const Ray& r, const Hittable& world, int depth) {
   return (1.0 - t) * Colour(1.0, 1.0, 1.0) + t * Colour(0.5, 0.7, 1.0);
 }
 
-
-int main() {
-
-  // Image
-
-  const auto aspect_ratio =  16.0 / 9.0;    // 16:9
-  const int img_width = 400;
-  const int img_height = static_cast<int>(img_width / aspect_ratio);
-  const int samples_per_pixel = 100;
-  const int max_depth = 50;
-
-  // World
-
+// return the scene used for development
+Hittable_List dev_scene() {
   Hittable_List world;
 
   auto material_ground = make_shared<Lambertian>(Colour(0.8, 0.8, 0.0));
@@ -63,14 +52,99 @@ int main() {
   world.add(make_shared<Sphere>(Point3(-1, 0, -1), -0.45, material_left));
   world.add(make_shared<Sphere>(Point3( 1, 0, -1),  0.5, material_right));
 
+  return world;
+}
+
+// produce a scene with lots of random spheres
+Hittable_List random_scene() {
+  Hittable_List world;
+
+  // radii
+  auto ground_radius = 1000.0;
+  auto small_radius  = 0.2;
+  auto big_radius    = 1.0;
+
+  // the ground is (still) round
+  auto ground_material = make_shared<Lambertian>(Colour(0.5, 0.5, 0.5));
+  world.add(make_shared<Sphere>(Point3(0, -1000, 0), ground_radius, ground_material));
+
+
+  // generate a bunch of random small spheres
+  for (int a = -11; a < 11; a++) {
+    for (int b = -11; b < 11; b++) {
+      auto choose_mat = random_double();
+
+      // random center for the sphere
+      Point3 center(
+          a + 0.9 * random_double(),
+          0.2,
+          b + 0.9 * random_double()
+          );
+
+      // make sure the spheres are at least a bit in the camera view
+      if ((center - Point3(4, 0.2, 0)).length() > 0.9) {
+        shared_ptr<Material> sphere_material;
+
+        // determine the randomly picked material
+        if (choose_mat < 0.8) {
+          // diffuse (80% likely)
+          auto albedo = Colour::random() * Colour::random();
+          sphere_material = make_shared<Lambertian>(albedo);
+        }
+        else if (choose_mat < 0.95) {
+          // metal (15% likely)
+          auto albedo = Colour::random(0.5, 1);
+          auto fuzz = random_double(0, 0.5);
+          sphere_material = make_shared<Metal>(albedo, fuzz);
+        }
+        else {
+          // glass (5% likely)
+          sphere_material = make_shared<Dielectric>(1.5);
+        }
+
+        // add a new sphere with the material
+        world.add(make_shared<Sphere>(center, small_radius, sphere_material));
+      }
+    }
+  }
+
+  // add 3 big spheres, one of each material type
+  auto material1 = make_shared<Dielectric>(1.5);
+  world.add(make_shared<Sphere>(Point3(0, 1, 0), big_radius, material1));
+
+  auto material2 = make_shared<Lambertian>(Colour(0.4, 0.2, 0.1));
+  world.add(make_shared<Sphere>(Point3(-4, 1, 0), big_radius, material2));
+
+  auto material3 = make_shared<Metal>(Colour(0.7, 0.6, 0.5), 0.0);
+  world.add(make_shared<Sphere>(Point3(4, 1, 0), big_radius, material3));
+
+  return world;
+}
+
+
+
+int main() {
+
+  // Image
+
+  const auto aspect_ratio =  3.0 / 2.0;
+  const int img_width = 1200;
+  const int img_height = static_cast<int>(img_width / aspect_ratio);
+  const int samples_per_pixel = 500;
+  const int max_depth = 50;
+
+  // World
+
+  Hittable_List world = random_scene();
+
   // Camera
 
-  Point3 lookFrom = Point3(3, 3, 2);
-  Point3 lookAt   = Point3(0, 0, -1);
+  Point3 lookFrom = Point3(13, 2, 3);
+  Point3 lookAt   = Point3(0, 0, 0);
   Vec3 vup = Vec3(0, 1, 0);
   auto vfov = 20;
-  auto dist_to_focus = (lookFrom - lookAt).length();
-  auto aperture = 2.0;
+  auto dist_to_focus = 10.0;
+  auto aperture = 0.1;
   Camera cam(lookFrom, lookAt, vup, vfov, aspect_ratio, aperture, dist_to_focus);
 
   // Render
