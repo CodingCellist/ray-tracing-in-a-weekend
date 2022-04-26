@@ -29,8 +29,8 @@ None yet. But I want to give parallelisation a go. We'll see.
 
 # References
 
-[_Ray Tracing in One Weekend_][1]
-[_Ray Tracing: The Next Week_][2]
+- [_Ray Tracing in One Weekend_][1]
+- [_Ray Tracing: The Next Week_][2]
 
 [1]: https://raytracing.github.io/books/RayTracingInOneWeekend.html
 [2]: https://raytracing.github.io/books/RayTracingTheNextWeek.html 
